@@ -1,0 +1,23 @@
+{
+  "name": "codecheker",
+  "version": "1.0.0",
+  "description": "bot support checker promo code ecommerce ",
+  "type": "module",
+  "main": "app.ts",
+  "scripts": {
+    "dev": "ts-node -r app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.12.7",
+    "puppeteer": "^22.6.5",
+    "ts-node": "^10.8.2",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

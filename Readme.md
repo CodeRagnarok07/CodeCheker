@@ -1,35 +1,32 @@
 
 # Todo
+- [ ] Get Framework page
+  - [ ] Page Type
+    - [ ] Viaje reservaciones
+    - [ ] Bebidas
+    - [ ] Lentes
+
 - [ ] objetivo 1 
-  - [ ] Shopify page
+  - [ ] Shopify page [ Complete flush ]
     - [ ] add product
     - [ ] ir a checkout 
     - [ ] verify codePromo
   - [ ] Hacer un programa de consola interactivo y que guarde el capture en el click board
   - [ ] permitir la asistencia de bot
 
-  - [ ] obtener framework
   - [ ] Crear lista de reportes y posibles pasos a seguir
   - [ ] Log on simply and complete workFlow
     - [ ] open page
     - [ ] verify codePromo
     - [ ] Verificar
 
-- [ ] Get Framework page
-  - [ ] Page Type
-    - [ ] Viaje reservaciones
-    - [ ] Bebidas
-    - [ ] Lentes
 - [ ] pageSelector
   - [ ] Items
     - [ ] Search
   - [ ] Cart
   - [ ] Checkout
   - [ ] Promo_code
-- [ ] executer
-  - [ ] App
-  - [ ] Pytest
-  - [ ] unitest
+
 - [ ] user register
   - [ ] 
 
@@ -46,6 +43,16 @@
 - Validate Xpath 
   - https://stackoverflow.com/questions/50151904/xpath-syntax-validator-in-python
   - https://www.mclibre.org/consultar/xml/lecciones/xml-xpath.html
+
+
+Crear un cart desde la api y obtener el token e ir directo a la url del chekout para sacar la foto y validar el cupon
+
+
+- shopify verify
+  - https://shopify.dev/docs/custom-storefronts/building-with-the-storefront-api/cart/manage
+  - https://shopify.dev/docs/api/functions/reference/cart-checkout-validation
+    - https://www.thesak.com/products.json
+
 
 
 # win execution
