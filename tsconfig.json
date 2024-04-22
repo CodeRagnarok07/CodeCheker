@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "Node16",
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "resolvePackageJsonImports": true,
+        "verbatimModuleSyntax": true,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+    }
+}

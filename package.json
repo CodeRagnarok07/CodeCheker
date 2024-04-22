@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "nd": "node app.js",
-    "ts": "tsx app",
+    "ts": "tsx src/app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
