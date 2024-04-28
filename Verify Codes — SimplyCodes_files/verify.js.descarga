@@ -1,0 +1,75 @@
+$(document).ready(function () {
+
+  // Select the node that will be observed for mutations
+  const targetNode = document.getElementById('corrections');
+
+  // Options for the observer (which mutations to observe)
+  const config = { attributes: true };
+  const tooltip = $('.verify-anchor-visibility').tooltip({
+    show: true,
+    hide: false,
+    classes: {
+      'ui-tooltip': 'editor-pioneer-badge',
+    },
+    content: function () {
+      return `
+        <div class="main-content">
+          <p>Is the deal's data accurate? Maximize your accuracy and coin earnings by correcting any inaccurate data, such as discount provided and eligible items.</p>
+          <button class="close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div> 
+        <div class="arrow"></div> 
+      `;
+    },
+    position: {
+      my: 'left+14 center+3',
+      at: 'right center',
+    },
+  });
+
+  // Callback function to execute when mutations are observed
+  const attachToolTip = (mutationList, observer) => {
+    for (const mutation of mutationList) {
+      if (mutation.type === 'attributes') {
+        // Open after a short delay so items settle into position
+        setTimeout(() => {
+          console.log('should open the tooltip here');
+          tooltip.tooltip('open');
+
+          // Disable mouse hover closing the tooltip
+          $('a.verify-anchor-visibility').unbind('mouseenter mouseleave mouseover');
+          // Explicit tooltip close or button interact
+          $('.editor-pioneer-badge button.close-btn, .verify-anchor-visibility').on('click', function () {
+            tooltip.tooltip('close');
+          });
+        }, 500);
+      }
+    }
+  };
+
+  // Create an observer instance linked to the callback function
+  const observer = new MutationObserver(attachToolTip);
+
+  // Start observing the target node for configured mutations
+  if (hasPastFifteenDays()) {
+    observer.observe(targetNode, config);
+
+    //Set last time the tooltip was seen
+    localStorage.setItem('doubleCheckVerify', new Date());
+  }
+});
+
+function hasPastFifteenDays() {
+  const MIN_DAYS_TO_SHOW = 15;
+  const ONE_DAY = 1000 * 3600 * 24
+  let lastShown = localStorage.getItem('doubleCheckVerify');
+  if (!lastShown) return true;
+
+  const todayTime = new Date().getTime();
+  const lastShownTime = new Date(lastShown).getTime();
+  const differenceInTime = todayTime - lastShownTime;
+
+  // ms * seconds * hours
+  const differenceInDays = differenceInTime / ONE_DAY;
+
+  return differenceInDays > MIN_DAYS_TO_SHOW;
+}

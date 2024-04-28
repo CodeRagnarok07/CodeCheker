@@ -1,0 +1,1586 @@
+$(function () {
+  // ---------- search / lookup ----------
+
+  $('.lu--merchants').autocomplete({
+    source: '/ajax/lookup.php?datatype=merchants',
+    minLength: 1,
+    select: function (_, ui) {
+      var toshow = '#' + $(this).data('lumerchants-show');
+      $(toshow).show();
+      var id = ui.item.id;
+      var slug = ui.item.slug;
+      var url = ui.item.url;
+      var name = ui.item.name;
+      var navtype = $(this).data('lu-navtype');
+      if (navtype == 'jump') {
+        window.location.href = url;
+      } else if (navtype == 'structured-jump') {
+        var url = $(this).data('lu-url');
+        window.location.href = url + id;
+      } else if (navtype == 'fill') {
+        var target = '#' + $(this).data('lu-target');
+        $(target).val(id);
+      } else if (navtype == 'add-pill') {
+        var pillname = $(this).data('lu-pillname');
+        var pillcontainer = '#' + $(this).data('lu-pillcontainer');
+        $(pillcontainer).show();
+        var pillclass = 'pill-' + slug;
+        var html =
+          "<div class='pill " +
+          pillclass +
+          "'>" +
+          name +
+          " <i class='fad fa-times-square pill-close' data-pillclose-target='" +
+          pillclass +
+          "'></i></div><input type='hidden' class='" +
+          pillclass +
+          "' name='" +
+          pillname +
+          "[]' value='" +
+          id +
+          "'>";
+        $(pillcontainer).append(html);
+        $(this).val('');
+        return false;
+      } else if (navtype == 'submit-coupon-jump') {
+        var url = 'https://simplycodes.com/submit-coupon/' + slug;
+        window.location.href = url;
+      } else if (navtype == 'add-codes-jump') {
+        var url = 'https://simplycodes.com/editor/add/' + slug;
+        window.location.href = url;
+      } else if (navtype == 'add-su-jump') {
+        var url = 'https://simplycodes.com/editor/add-su/' + slug;
+        window.location.href = url;
+      } else if (navtype == 'add-link-jump') {
+        var url = 'https://simplycodes.com/editor/add-link/' + slug;
+        window.location.href = url;
+      } else if (navtype == 'coupon-phrase-jump') {
+        var url = 'https://simplycodes.com/feature/common-coupon-phrases/' + slug;
+        window.location.href = url;
+      }
+    },
+  });
+
+  $('.lu--users').autocomplete({
+    source: '/ajax/lookup.php?datatype=users',
+    minLength: 1,
+    select: function (event, ui) {
+      var toshow = '#' + $(this).data('luusers-show');
+      $(toshow).show();
+      var id = ui.item.id;
+      var url = ui.item.url;
+      var navtype = $(this).data('lu-navtype');
+      if (navtype == 'jump') {
+        window.location.href = url;
+      } else if (navtype == 'structured-jump') {
+        var url = $(this).data('lu-url');
+        window.location.href = url + id;
+      } else if (navtype == 'fill') {
+        var target = '#' + $(this).data('lu-target');
+        $(target).val(id);
+      }
+    },
+  });
+
+  // ----- pillclose
+  $('.pill-close').on('click', function () {
+    var target = '.' + $(this).data('pillclose-target');
+    $(target).remove();
+  });
+
+  $('.lu__products--jump').autocomplete({
+    source: '/lookup-jump/products/',
+    minLength: 1,
+    select: function (_, ui) {
+      var url = ui.item.url;
+      var navtype = $(this).data('navtype');
+      if (navtype == 'rate') {
+        var slug = ui.item.slug;
+        url = 'https://knoji.com/rate/' + slug + '/';
+      } else if (navtype == 'deals') {
+        url = url + 'deals/';
+      }
+      window.location.href = url;
+    },
+  });
+
+  // ---------- Codes ----------
+
+  $('.use-code').on('click', function () {
+    var input = $(this).data('input').replace(/\./g, '__');
+    var copyInput = $('#' + input);
+    copyInput.removeClass('dnone');
+    copyInput.trigger('select');
+    copyInput.get(0).setSelectionRange(0, copyInput.val().length);
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      if (window.prompt) {
+        window.prompt('Copy to clipboard: Ctrl C, Enter', copyInput.val());
+      }
+    }
+    copyInput.addClass('dnone');
+    var pk = $(this).data('pk');
+    var loc = 'https://simplycodes.com/redeem-code/' + pk;
+    var type = $(this).data('type');
+    if (type) loc = loc + '/' + type;
+    var stay = $(this).data('navigation') == 'stay';
+    window.open(loc).focus();
+    // DS click tracker
+    $.ajax({
+      type: 'POST',
+      url: '/sc-tracker/promotions/' + pk + 'click',
+      contentType: 'application/json',
+      data: JSON.stringify({ target: 'simplycodes', href: window.location.href }),
+      success: function () {
+        // handle navigation
+        if (!stay) {
+          window.location.href = [location.protocol, '//', location.host, '/promo-codes/', slug].join('');
+        }
+      },
+    });
+  });
+
+  $('.test-code').on('click', function () {
+    var input = $(this).data('input').replace(/\./g, '__');
+    var copyInput = $('#' + input);
+    copyInput.removeClass('dnone');
+    copyInput.trigger('select');
+    // copyInput.get(0).setSelectionRange(0, copyInput.val().length);
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      if (window.prompt) {
+        window.prompt('Copy to clipboard: Ctrl C, Enter', copyInput.val());
+      }
+    }
+    copyInput.addClass('dnone');
+    var url = $(this).data('url');
+    if (url) {
+      var loc = url;
+    } else {
+      var pk = $(this).data('pk');
+      var loc = 'https://simplycodes.com/test-code/' + pk;
+    }
+    window.open(loc).focus();
+  });
+
+  // -- copycode
+
+  $('.copycode').on('click', function () {
+    var merchant_id = $(this).data('merchant');
+    var input = $(this).data('input').replace(/\./g, '__');
+    var copyInput = $('#' + input);
+    copyInput.removeClass('dnone');
+    copyInput.trigger('select');
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      if (window.prompt) {
+        window.prompt('Copy to clipboard: Ctrl C, Enter', copyInput.val());
+      }
+    }
+
+    const container = this.closest('.mod');
+    const previousHeader = $(container).prev('h2')
+    let tableName = 'title'
+
+    if (previousHeader && previousHeader[0]) {
+      tableName = previousHeader[0].id;
+    }
+
+    // Find all previous rows of this type (the table has duplicate rows not displayed for comments)
+    const prevItems = $(this).closest('tr').prevAll().filter(function(index, item) {
+      return $(item).hasClass('table--row') && $(item).hasClass('mp--row');
+    })
+
+    const rowIndex = prevItems.length + 1;
+    const lastVerified = $(this).closest('td').next().data('days-ago');
+
+    const codeData = {
+      code: copyInput.val(),
+      tableName,
+      rowIndex,
+      lastVerified
+    }
+    
+    trackCodeCopied(codeData);
+
+    copyInput.addClass('dnone');
+    // -- update label text
+    var text = $(this).data('copiedtext');
+    var texttarget = $(this).data('texttarget');
+    if (text) {
+      if (texttarget) {
+        $('#' + texttarget).text(text);
+      } else {
+        $(this).text(text);
+      }
+    }
+    var icon = '#' + $(this).data('icon');
+    $(icon).removeClass('blue');
+    var viztarget = '#' + $(this).data('viztarget');
+    $(viztarget).addClass('blue').addClass('fw500');
+    var viztarget2 = '#' + $(this).data('viztarget2');
+    $(viztarget2).addClass('blue');
+    // -- code social block interactions
+    var usediv = '#' + $(this).data('usediv'); // -- redeem button
+    $(usediv).fadeIn(400).css('display', 'inline-block');
+    var bugdiv = '#' + $(this).data('bugdiv'); // -- copied! bug
+    $(bugdiv).show();
+    var copytype = $(this).data('copytype'); // -- csb codepill styling
+    if (copytype == 'csb') {
+      $(this).css('color', '#777').css('background-color', '#fafafa').css('border-color', '#eeeeee');
+    }
+
+    // -- record SU click
+    var su_id = $(this).data('suid');
+    var userid = $(this).data('uvar');
+    if (su_id) {
+      $.ajax({
+        type: 'GET',
+        url: '/ajax/js-data.php',
+        data: {
+          type: 'increment--su--click',
+          var1: su_id,
+          var1: userid,
+        },
+        datatype: 'html',
+      });
+    }
+
+    // -- popunder interactions
+    var pk = $(this).data('popc');
+    var slug = $(this).data('popm');
+    var domain = $(this).data('popd');
+    var affLink = $(this).data('aff');
+
+    if ((pk || (su_id && merchant_id)) && slug && domain) {
+      var newtab = 'https://simplycodes.com/store/' + domain + '/' + pk;
+      var url = su_id
+        ? 'https://api.simplycodes.com/v1/redirect/merchant/' + merchant_id
+        : 'https://api.simplycodes.com/v1/redirect/promotion/' + pk;
+      url += '?origin=scweb';
+
+      window.open(newtab).focus();
+
+      // Only execute the promotion redirect if the "data-aff" property is available
+      if (affLink) {
+        if (window.gtag) {
+          gtag('event', 'Copy Button', {
+            event_category: 'Single Merchant',
+            event_label: domain,
+            event_callback: function () {
+              window.location.href = url;
+            },
+          });
+        } else {
+          window.location.href = url;
+        }
+      }
+    }
+  });
+  // -- codepill--copy
+
+  $('.codepill--copy').on('click', function () {
+    var target = $(this).data('target').replace(/\./g, '__');
+    var targetInput = $('#' + target);
+    targetInput.removeClass('dnone');
+    targetInput.trigger('select');
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      if (window.prompt) {
+        window.prompt('Copy to clipboard: Ctrl C, Enter', targetInput.val());
+      }
+    }
+    targetInput.addClass('dnone');
+    var viztarget = '#' + $(this).data('viztarget');
+    $(viztarget).addClass('blue').addClass('bg--blue--l8');
+    $(this).addClass('bg--blue').addClass('white').addClass('bdc--blue');
+    //		$(this).addClass("blue");
+    var texttarget = '#' + $(this).data('texttarget');
+    $(texttarget).text('Copied');
+  });
+
+  // -- copythiscode
+
+  $('.copythiscode').on('click', function () {
+    var target = $(this).data('target').replace(/\./g, '__');
+    var targetInput = $('#' + target);
+    targetInput.removeClass('dnone');
+    targetInput.trigger('select');
+    // targetInput.get(0).setSelectionRange(0, targetInput.val().length);
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      if (window.prompt) {
+        window.prompt('Copy to clipboard: Ctrl C, Enter', targetInput.val());
+      }
+    }
+    targetInput.addClass('dnone');
+    var viztarget = '#' + $(this).data('viztarget');
+    $(this).addClass('codepill--copied');
+    $(viztarget).show();
+  });
+
+  // --- js-data
+
+  $('.js-data').on('click', function () {
+    var type = $(this).data('type');
+    var flag = $(this).data('flag');
+    var var1 = $(this).data('var1');
+    var var2 = $(this).data('var2');
+    var var3 = $(this).data('var3');
+    var id = '#' + $(this).data('id');
+    var ui_type = $(this).data('ui-type');
+
+    if (type == 'follow-merchant' && flag == 'follow') {
+      trackFollowMerchant(this);
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/ajax/js-data.php',
+      data: {
+        type: type,
+        flag: flag,
+        var1: var1,
+        var2: var2,
+        var3: var3,
+      },
+      datatype: 'html',
+      success: function (html) {
+        var result = html;
+        if (type == 'code-vote') {
+          $('#' + var3).val(result);
+        } else if (type == 'follow-merchant') {
+          if (flag == 'follow') {
+            $('.notifylink').text('In your feed');
+            $('.notifylink').data('flag', 'unfollow');
+            $('.followlink').text('Following');
+            $('.followlink').data('flag', 'unfollow');
+            $('.followbutton').text('Following');
+            $('.followbutton').data('flag', 'unfollow');
+            $('#' + var3).text('Following');
+            $('#' + var3).data('flag', 'unfollow');
+            if (ui_type == 'button') {
+              $('#' + var3).addClass('btno--blue');
+            }
+          } else if (flag == 'unfollow') {
+            $('.notifylink').text('+ Notify me');
+            $('.notifylink').data('flag', 'follow');
+            $('.followlink').text('+ Follow');
+            $('.followlink').data('flag', 'follow');
+            $('.followbutton').text('Follow');
+            $('.followbutton').data('flag', 'follow');
+            $('#' + var3).text('Follow');
+            $('#' + var3).data('flag', 'follow');
+            if (ui_type == 'button') {
+              $('#' + var3).removeClass('btno--blue');
+            }
+          }
+        } else if (type == 'vote--promo') {
+          //					$(id).css('background-color', '#f8f8f8').css('color', '#00B3E2');
+          $(id).addClass('csb--vote--submitted');
+          //					alert("#votecount-"+var1);
+          $('#votecount-' + var1).text(parseInt(var3 + 1));
+        }
+      },
+    });
+  });
+
+  // -- submit comment
+
+  $('.post--comment').on('click', function () {
+    var target = '#' + $(this).data('target');
+    var var_input = $(this).data('var-input');
+    var vote_id = $('#' + var_input).val();
+    var comment = $(target).val();
+    var userid = $(this).data('var1');
+    var tohide = '#' + $(this).data('tohide');
+    var toshow = '#' + $(this).data('toshow');
+    if (!comment || comment.length <= 0) {
+      $(target).css('border-color', 'red').css('color', 'red');
+    } else {
+      $.ajax({
+        type: 'GET',
+        url: '/ajax/js-data.php',
+        data: {
+          type: 'post--comment',
+          var1: vote_id,
+          var2: comment,
+          var3: userid,
+        },
+        datatype: 'html',
+        success: function (_) {
+          // Do nothing
+        },
+      });
+      $(this).hide();
+      $(tohide).hide();
+      $(toshow).show();
+    }
+  });
+
+  // --- clickable
+
+  $('.clickable').on('click', function () {
+    var target = $(this).data('target');
+    var viztarget = $(this).data('viztarget');
+    var type = $(this).data('type');
+    var currentval = $('#' + target).val();
+    if (type == 'onboarding-brands') {
+      if (currentval == 0) {
+        $('#' + target).val(1);
+        $('#' + viztarget).show();
+        $(this).css('border-color', '#00B3E2');
+      } else {
+        $('#' + target).val(0);
+        $('#' + viztarget).hide();
+        $(this).css('border-color', '#eee');
+      }
+    } else if (type == 'follow-store') {
+      if (currentval == 0) {
+        $('#' + target).val(1);
+        $(this).text('Following');
+        $(this).addClass('btno--blue');
+      } else {
+        $('#' + target).val(0);
+        $(this).text('+ Follow');
+        $(this).removeClass('btno--blue');
+      }
+    }
+  });
+
+  $('.session-data').on('click', function () {
+    var type = $(this).data('type');
+    var target = $(this).data('target');
+    var viztarget = $(this).data('viztarget');
+    var currentval = $('#' + target).val();
+    var var1 = $(this).data('var1');
+    var var2 = $(this).data('var2');
+    var var3 = $(this).data('var3');
+    var flag = $(this).data('flag');
+    $.ajax({
+      type: 'GET',
+      url: '/ajax/session-data.php',
+      data: {
+        type: type,
+        target: target,
+        currentval: currentval,
+        flag: flag,
+        var1: var1,
+        var2: var2,
+        var3: var3,
+      },
+      datatype: 'html',
+      success: function (html) {
+        var result = html;
+        if (type == 'follow-store') {
+          if (currentval == 0) {
+            $('#' + target).val(1);
+            $('#' + viztarget).text('Following');
+            $('#' + viztarget).addClass('btno--blue');
+            if (!$('#store-count-toaster').is(':visible')) {
+              $('#store-count-toaster').show();
+            }
+            $('#onboarding-follow-count').val(result);
+            if (result == 1) {
+              $('#onboarding-count-label').text('store');
+            } else {
+              $('#onboarding-count-label').text('stores');
+            }
+            $('#onboarding-count').text(result);
+          } else {
+            $('#' + target).val(0);
+            $('#' + viztarget).text('Follow');
+            $('#' + viztarget).removeClass('btno--blue');
+            $('#onboarding-follow-count').val(result);
+            $('#onboarding-count').text(result);
+            if (result == 0) {
+              $('#store-count-toaster').hide();
+            }
+            if (result == 1) {
+              $('#onboarding-count-label').text('store');
+            } else {
+              $('#onboarding-count-label').text('stores');
+            }
+          }
+        }
+      },
+    });
+  });
+
+  // --- ckstate (clickstate)
+
+  $('.ckstate').on('click', function () {
+    var type = $(this).data('ckstate-type');
+    var target2 = '#' + $(this).data('ckstate-target2');
+    if (type == 'code-vote') {
+      $(this).addClass('fw600').addClass('bdcb');
+      $(target2).unbind('click');
+    }
+  });
+
+  // -- verify code
+
+  $('.verify-vote').on('click', function () {
+    $('.verify-vote')
+      .removeClass('fw600')
+      .removeClass('bg--green--l7')
+      .removeClass('bg--red--l7')
+      .removeClass('bdc--green')
+      .removeClass('bdc--red');
+    $(this).addClass('fw600');
+    $('.skip-class').hide();
+    $('.skip-spinner').hide();
+    $('.verify-spinner').css('display', 'flex');
+    var type = $(this).data('type');
+    if (type == 'valid') {
+      $('#valid').show();
+      $('#invalid').hide();
+      $('#vote').val('yes');
+      $('#submit-invalid').hide();
+      $(this).addClass('bg--green--l7').addClass('bdc--green');
+    } else if (type == 'invalid') {
+      $('#valid').hide();
+      $('#invalid').show();
+      $('#vote').val('no');
+      $('#corrections').hide();
+      $('#submit-valid').hide();
+      $(this).addClass('bg--red--l7').addClass('bdc--red');
+    }
+    var moderator = $(this).data('moderator');
+    if (moderator == 1) {
+      if (type == 'valid') {
+        $('#submit-valid').show();
+        $('#submit-invalid').hide();
+        $('#admin-delete-pk').hide();
+      } else if (type == 'invalid') {
+        $('#submit-valid').hide();
+        $('#submit-invalid').show();
+        $('#admin-delete-pk').show();
+      }
+    }
+  });
+  $('.remove-vote-state').on('click', function () {
+    $('.skip-spinner').css('display', 'flex');
+    $('.verify-spinner').hide();
+    $('.verify-vote')
+      .removeClass('fw600')
+      .removeClass('bg--green--l7')
+      .removeClass('bg--red--l7')
+      .removeClass('bdc--green')
+      .removeClass('bdc--red');
+  });
+
+  // -- screenshot
+
+  $('.screenshot').on('change', function () {
+    var vote = $('#vote').val();
+    var file = $(this).val();
+    if (vote == 'yes' && file) {
+      $('#corrections').show();
+    } else if (vote == 'no' && file) {
+      $('#submit-invalid').show();
+    }
+    $(this).addClass('fw600').addClass('blue');
+  });
+
+  // --- error checks for VALID verification
+
+  $('.verify-error-checks').on('click', function () {
+    var file = $('#screenshot-valid').val();
+    var is_admin = $(this).data('is-admin');
+    var error;
+    if (!file && !is_admin) {
+      error = 'Please upload a valid image as your screenshot.';
+    }
+    if (!error) {
+      // -- type
+      var type = $('#type').val();
+      if (type == 'type-pct') {
+        var type_input = $('#type-pct-input').val();
+        if (isNaN(type_input)) {
+          error = 'Enter a numeric value for the discount.';
+        }
+      }
+      if (type == 'type-amt') {
+        var type_input = $('#type-amt-input').val();
+        if (isNaN(type_input)) {
+          error = 'Enter a numeric value for the discount.';
+        }
+      }
+      if (type == 'type-other') {
+        var type_input = $('#type-other-input').val();
+        if (type_input.length == 0) {
+          error = 'Please enter a description of the discount.';
+        }
+        if (!error) {
+          error = checkForTextErrors(type_input);
+        }
+      }
+    }
+    if (!error) {
+      // -- what
+      var what = $('#what').val();
+      var what_desc = $('#what-desc-input').val();
+      var what_sw = $('#what-sw-input').val();
+      var db_what = $('#db-what').val();
+      var db_what_text = $('#db-what-text').val();
+
+      error = checkForTextErrors(what_sw);
+
+      if (type === 'type-bogo') {
+        const validWhat = ['what-items', 'what-brands', 'what-categories'];
+
+        const isValidWhat = validWhat.includes(what) || validWhat.includes(db_what);
+        const isValidDescription = !!what ? !!what_desc : !!db_what_text;
+
+        if (!isValidWhat || !isValidDescription) {
+          error = 'Please update the elible items of BOGO offer.';
+        }
+      }
+    }
+    if (!error) {
+      // -- cart limitation
+      var cartlimitation = $('#minorder').val();
+      if (cartlimitation == 'minorder-amt') {
+        var cartlimitation_input = $('#minorder-amt-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the minimum order amount required.';
+        }
+      } else if (cartlimitation == 'minorder-max-amt') {
+        var cartlimitation_input = $('#minorder-max-amt-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the maximum order amount.';
+        }
+      } else if (cartlimitation == 'minorder-other') {
+        var cartlimitation_input = $('#minorder-other-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the minimum order required.';
+        }
+      } else if (cartlimitation == 'minorder-qty') {
+        var cartlimitation_input = $('#minorder-qty-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the minimum quantity required.';
+        }
+      } else if (cartlimitation == 'minorder-max-qty') {
+        var cartlimitation_input = $('#minorder-max-qty-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the maximum quantity.';
+        }
+      } else if (cartlimitation == 'minorder-item') {
+        var cartlimitation_input = $('#minorder-item-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the minimum order required.';
+        }
+      } else if (cartlimitation == 'minorder-other') {
+        var cartlimitation_input = $('#minorder-other-input').val();
+        if (cartlimitation_input.length == 0) {
+          error = 'Please describe the minimum order required.';
+        }
+        if (!error) {
+          error = checkForTextErrors(cartlimitation_input);
+        }
+      }
+    }
+    if (!error) {
+      // -- restrictions
+      var restrictions = $('#restrictions').val();
+      if (restrictions == 'restrictions-other') {
+        var restrictions_input = $('#restrictions-other-input').val();
+        if (restrictions_input.length == 0) {
+          error = 'Please describe the restrictions for this deal.';
+        }
+      }
+    }
+    if (!error) {
+      // -- check dates
+      var expire_date = $('#expiration-date').val();
+      var start_date = $('#start-date').val();
+      var current_date = new Date();
+      current_date.setDate(current_date.getDate() - 1);
+      if (expire_date) {
+        if (!Date.parse(expire_date)) error = 'Please enter a valid date.';
+        if (Date.parse(expire_date) < Date.parse(current_date)) error = 'Please enter a valid date.';
+      }
+      if (start_date) {
+        if (!Date.parse(start_date)) error = 'Please enter a valid date.';
+        if (Date.parse(start_date) < Date.parse(current_date)) error = 'Please enter a valid date.';
+      }
+    }
+
+    if (!error) {
+      // -- check URL
+      var url = $('#url').val();
+      if (url.length > 0) {
+        if (!isValidUrl(url)) {
+          error = 'Please enter a valid URL.';
+        } else {
+          var store_domain = $('#store-domain').val();
+          var domain = getRootDomain(url);
+          if (domain != store_domain) {
+            error = "Deal URL must match this store's website.";
+          }
+        }
+      }
+    }
+
+    if (error) {
+      alert(error);
+      return 0;
+    } else {
+      // -- if all good, construct and show the title, show the submit button
+
+      var db_type = $('#db-type').val();
+      var db_type_pct = $('#db-type-pct').val();
+      var db_type_amt = $('#db-type-amt').val();
+      var db_type_text = $('#db-type-text').val();
+      var db_what = $('#db-what').val();
+      var db_what_text = $('#db-what-text').val();
+      var db_exclusions_text = $('#db-exclusions-text').val();
+      var db_minorder_amount = $('#db-minorder-amount').val();
+      var db_minorder_text = $('#db-minorder-text').val();
+      var db_maxorder_amount = $('#db-maxorder-amount').val();
+      var db_maxorder_text = $('#db-maxorder-text').val();
+      var db_restrictions = $('#db-restrictions').val();
+      var db_restrictions_text = $('#db-restrictions-text').val();
+      var db_freeshipping = $('#db-free-shipping').val();
+      var db_freebie = $('#db-freebie').val();
+      var db_bogo = $('#db-bogo').val();
+      var merchant_name = $('#merchant-name').val();
+
+      var preview_type;
+      var preview_what;
+      var preview_cartlimitation;
+      var preview_restrictions;
+      var is_apponly;
+
+      // contruct type
+      if (type == 0) {
+        if (db_type == 'percentOff') {
+          preview_type = db_type_pct + '% Off';
+        } else if (db_type == 'amountOff') {
+          preview_type = '$' + db_type_amt + ' Off';
+        } else if (db_type == 'otherOff') {
+          preview_type = db_type_text;
+        } else if (db_freeshipping == 1) {
+          preview_type = 'Free Shipping on';
+        } else if (db_freebie == 1) {
+          preview_type = 'Free gift';
+        } else if (db_bogo == 1) {
+          preview_type = 'Buy One Get One Free on';
+        } else {
+          preview_type = 'Discount on';
+        }
+      } else {
+        if (type == 'type-pct') {
+          preview_type = type_input + '% Off';
+        } else if (type == 'type-amt') {
+          preview_type = '$' + type_input + ' Off';
+        } else if (type == 'type-fs') {
+          preview_type = 'Free Shipping';
+        } else if (type == 'type-fg') {
+          preview_type = 'Free Gift';
+        } else if (type == 'type-bogo') {
+          preview_type = 'Buy One Get One Free on';
+        } else if (type == 'type-other') {
+          preview_type = type_input;
+        }
+      }
+      // contruct what
+      if (what == 0) {
+        if (db_what == 'storewide') {
+          if (db_exclusions_text.length > 0) {
+            preview_what = 'Storewide, Excludes ' + db_exclusions_text;
+          } else {
+            preview_what = 'Storewide';
+          }
+        } else if (db_what_text) {
+          preview_what = db_what_text;
+        } else if (db_what == 'items' || db_what == 'other' || db_what == 'none') {
+          preview_what = 'Select Items';
+        } else if (db_what == 'brands') {
+          preview_what = 'Select Brands';
+        } else if (db_what == 'categories') {
+          preview_what = 'Select Catgories';
+        } else if (db_what == 'sale') {
+          preview_what = 'Clearance Items';
+        }
+      } else {
+        if (what == 'what-sw') {
+          if (what_sw) {
+            preview_what = '(Storewide, Excludes ' + what_sw + ')';
+          } else {
+            preview_what = '(Storewide)';
+          }
+        } else if (what_desc.length > 0) {
+          preview_what = what_desc;
+        } else if (what == 'what-items' || what == 'what-other') {
+          preview_what = 'Select Items';
+        } else if (what == 'what-brands') {
+          preview_what = 'Select Brands';
+        } else if (what == 'what-categories') {
+          preview_what = 'Select Catgories';
+        } else if (what == 'what-sale') {
+          preview_what = 'Clearance Items';
+        } else if (type == 'type-fg' || type == 'type-fs') {
+          preview_what = '';
+        }
+      }
+      // construct minorder
+      if (cartlimitation == 0) {
+        if (db_minorder_amount > 0) {
+          preview_cartlimitation = 'Minimum Order: $' + db_minorder_amount;
+        } else if (db_minorder_text) {
+          preview_cartlimitation = 'Must Order ' + db_minorder_text;
+        } else if (db_maxorder_amount > 0) {
+          preview_cartlimitation = 'Maximum Order: $' + db_minorder_amount;
+        } else if (db_maxorder_text) {
+          preview_cartlimitation = 'Maximum Order of ' + db_maxorder_text;
+        }
+      } else {
+        if (cartlimitation == 'minorder-amt') {
+          preview_cartlimitation = 'Minimum Order: $' + cartlimitation_input;
+        } else if (cartlimitation == 'minorder-max-amt') {
+          preview_cartlimitation = 'Maximum Order: $' + cartlimitation_input;
+        } else if (cartlimitation == 'minorder-max-qty') {
+          preview_cartlimitation = 'Maximum Order of ' + cartlimitation_input;
+        } else {
+          preview_cartlimitation = 'Must Order ' + cartlimitation_input;
+        }
+      }
+      // construct restrictions
+      if (restrictions == 0) {
+        if (db_restrictions == 'newcustomers') {
+          preview_restrictions = 'New Customers Only';
+        } else if (db_restrictions == 'members') {
+          preview_restrictions = 'Members Only';
+        } else if (db_restrictions == 'storecard') {
+          preview_restrictions = 'When Using Store Card';
+        } else if (db_restrictions == 'apponly') {
+          is_apponly = true;
+        } else if (db_restrictions_text.length > 0) {
+          preview_restrictions = db_restrictions_text;
+        }
+      } else {
+        if (restrictions == 'restrictions-new') {
+          preview_restrictions = 'New Customers Only';
+        } else if (restrictions == 'restrictions-membersonly') {
+          preview_restrictions = 'Members Only';
+        } else if (restrictions == 'restrictions-card') {
+          preview_restrictions = 'When Using Store Card';
+        } else if (restrictions == 'restrictions-apponly') {
+          is_apponly = true;
+        } else if (restrictions == 'restrictions-other') {
+          preview_restrictions = restrictions_input;
+        }
+      }
+
+      // -- show the previewed title
+      var title = preview_type + ' ' + preview_what;
+      if (preview_cartlimitation) {
+        title = title + ' (' + preview_cartlimitation + ')';
+      }
+      if (preview_restrictions) {
+        if (preview_cartlimitation) {
+          title = title + ' ' + preview_restrictions;
+        } else {
+          title = title + ' (' + preview_restrictions + ')';
+        }
+      }
+      title = titleCase(title);
+      if (is_apponly) {
+        title = title + ' with ' + merchant_name + '\'s Mobile App';
+      } else {
+        title = title + ' at ' + merchant_name;
+      }
+      var preview_input = '#preview-title';
+      var preview_input_div = '#preview-title-div';
+      var preview_input_input = '#preview-title-input';
+      $(preview_input_div).show();
+      $(preview_input).text(title);
+      $(preview_input_input).val(title);
+      $(this).text('Update title');
+
+      $('#submit-valid').show();
+    }
+  });
+
+  // -- submit the VALID form
+
+  $('#submit-valid').on('click', function () {
+    $('.verify-error-checks').hide();
+    $('#show-corrections').hide();
+    $('#verification-form').trigger('submit');
+  });
+
+  // --- error checks for INVALID verification form submission
+
+  $('#submit-invalid').on('click', function () {
+    $('#admin-delete-pk').hide();
+    var file = $('#screenshot-invalid').val();
+    var is_admin = $(this).data('is-admin');
+    var error;
+    if (!file && !is_admin) {
+      error = 'Please upload a valid image as your screenshot.';
+    }
+    if (error) {
+      $('#admin-delete-pk').show();
+      alert(error);
+      return 0;
+    } else {
+      $('#verification-form').submit();
+    }
+  });
+
+  // -- check code
+
+  $('#check-code').on('click', function () {
+    var code = $('#code').val();
+    var mid = $(this).data('mid');
+    var error = 0;
+    $('#format-error').hide();
+    $('#code-exists').hide();
+    if (code && mid) {
+      $.ajax({
+        type: 'GET',
+        url: '/ajax/check-code.php',
+        data: {
+          code: code,
+          mid: mid,
+        },
+        datatype: 'html',
+        success: function (html) {
+          var result = html;
+          if (result == 'format') {
+            $('#format-error').show();
+            error = 1;
+          } else if (result == 'healthy' || result == 'needsmod' || result == 'restricted') {
+            $('#code-exists').show();
+          } else if (result == 'reactivation') {
+            $('#reactivation').show();
+          }
+          if (!error) {
+            $('#check-code').hide();
+            $('#code-info').show();
+            $('#code').prop('disabled', 'true').addClass('input--text--disabled--addcode');
+            $('#start-over').show();
+            $('#code-post').val(code);
+          }
+        },
+      });
+    } else {
+      alert('Please enter a code to continue.');
+    }
+  });
+
+  $('#code').on('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // ----- generic simplycodes submit form
+
+  $('.submit-sc').on('click', function () {
+    var type = $(this).data('submit-type');
+    if (type == 'redeem-coins') {
+      var max = $(this).data('submit-max');
+      var val = $('#redeem-count').val() * 1000;
+      if (val > max) {
+        alert('Please enter a value of ' + max + ' or lower.');
+        return 0;
+      }
+      if (val < 1 || !val || isNaN(val)) {
+        alert('Please enter a valid numeric value.');
+        return 0;
+      }
+      var option = $(this).data('submit-option');
+      $('#redeem-option').val(option);
+    } else if (type == 'contact') {
+      var loggedin = $(this).data('loggedin');
+      if (loggedin) {
+        var email = $('#email').val();
+        var name = $('#name').val();
+        if (email.length == 0 || name.length == 0) {
+          alert('Please complete all the fields to send your message.');
+          return 0;
+        }
+        var bug = $('#bug').val();
+        var suggestion = $('#suggestion').val();
+        var partnerships = $('#partnerships').val();
+        var other = $('#other').val();
+        var details = $('#details').val();
+        if (!bug && !suggestion && !partnerships && !other) {
+          alert('Please select a topic for your question.');
+          return 0;
+        }
+        if (details.length == 0) {
+          alert('Please describe your issue in the question field.');
+          return 0;
+        }
+      }
+    }
+    var form = '#' + $(this).data('target');
+    if (form) {
+      $(form).trigger('submit');
+    } else {
+      var form = '#' + $(this).attr('name');
+      $(form).trigger('submit');
+    }
+  });
+
+  // -- preview deal title (add-codes)
+
+  $('.preview-title').on('click', function () {
+    var error_message = 'Please complete the required fields before continuing.';
+    var error = 0;
+
+    var type = $(this).data('type');
+
+    if (type != 'su') {
+      var code = $('#code').val();
+      if (code.length == 0) {
+        error = 1;
+      }
+
+      var file = $('#screenshot-valid').val();
+      if (!file) {
+        error = 1;
+      }
+    }
+
+    if (!error) {
+      // -- get type
+      var type_text;
+      var type_option = '#type';
+      var type = $(type_option).val();
+      if (type == 0) {
+        error = 1;
+      }
+      if (!error) {
+        var type_val;
+        if (type == 'type-fs') {
+          type_val = 'Free Shipping';
+        } else if (type == 'type-fg') {
+          type_val = 'Free Gift';
+        } else if (type == 'type-bogo') {
+          type_val = 'Buy One Get One Free';
+        } else {
+          var type_input = '#' + type + '-input';
+          type_val = $(type_input).val();
+        }
+        if (type == 'type-pct') {
+          type_text = type_val + '% Off';
+        } else if (type == 'type-amt') {
+          type_text = '$' + type_val + ' Off';
+        } else if (type == 'type-other' || type == 'type-fs' || type == 'type-fg' || type == 'type-bogo') {
+          type_text = type_val + ' on';
+        }
+        if (type_val.length == 0) {
+          error = 1;
+        } else if ((type == 'type-pct' || type == 'type-amt') && type_val == 0) {
+          error = 5;
+        } else if (type == 'type-pct' && type_val == 100) {
+          error = 5;
+        }
+
+        const what_desc = $('#what-desc-input').val();
+        if (type === 'type-bogo' && !what_desc) {
+          error = 6;
+        }
+
+        if (!error) {
+          error = checkForTextErrors(type_val);
+          if (error) {
+            error_message = error;
+          }
+        }
+      }
+    }
+
+    if (!error) {
+      // -- get what
+      var what_text;
+      var what_option = '#what';
+      var what = $(what_option).val();
+      var what_sw = $('#what-sw-input').val();
+      if (what == 0) {
+        error = 1;
+      }
+      var what_description = $('#what-desc-input').val();
+      if (what_description) {
+        if (!error) {
+          error = checkForTextErrors(what_description);
+          if (error) {
+            error_message = error;
+          }
+        }
+        what_text = what_description;
+      } else {
+        if (what == 'what-items') {
+          what_text = 'Select Items';
+        } else if (what == 'what-brands') {
+          what_text = 'Select Brands';
+        } else if (what == 'what-categories') {
+          what_text = 'Select Items';
+        } else if (what == 'what-sale') {
+          what_text = 'Clearance Items';
+        } else if (what == 'what-other') {
+          what_text = 'Select Items';
+        } else if (what == 'what-sw') {
+          if (what_sw) {
+            what_text = '(Storewide, Excludes ' + what_sw + ')';
+          } else {
+            what_text = '(Storewide)';
+          }
+        }
+        if (!error) {
+          error = checkForTextErrors(what_sw);
+          if (error) {
+            error_message = error;
+          }
+        }
+      }
+    }
+
+    if (!error) {
+      // -- get minorder
+      var minorder_text;
+      var minorder_option = '#minorder';
+      var minorder_type = $(minorder_option).val();
+      if (minorder_type != 0) {
+        minorder_input = $('#' + minorder_type + '-input').val();
+        if (minorder_input.length == 0) {
+          error = 1;
+        }
+        if (minorder_type == 'minorder-amt') {
+          minorder_text = 'Minimum Order: $' + minorder_input;
+        } else if (minorder_type == 'minorder-max-amt') {
+          minorder_text = 'Maximum Order: $' + minorder_input;
+        } else if (minorder_type == 'minorder-max-qty') {
+          minorder_text = 'Maximum Order of ' + minorder_input;
+        } else {
+          minorder_text = 'Must Order ' + minorder_input;
+        }
+        if (!error) {
+          error = checkForTextErrors(minorder_input)
+          if (error) {
+            error_message = error;
+          }
+        }
+      }
+
+      // -- get restrictions
+      var restrictions_text;
+      var is_apponly;
+      var restrictions_option = '#restrictions';
+      var restrictions = $(restrictions_option).val();
+      if (restrictions != 0) {
+        if (restrictions == 'restrictions-new') {
+          restrictions_text = 'New Customers Only';
+        } else if (restrictions == 'restrictions-membersonly') {
+          restrictions_text = 'Members Only';
+        } else if (restrictions == 'restrictions-apponly') {
+          is_apponly = true;
+        } else if (restrictions == 'restrictions-card') {
+          restrictions_text = 'When Using Store Card';
+        } else if (restrictions == 'restrictions-other') {
+          restrictions_text = $('#restrictions-other-input').val();
+          if (restrictions_text.length == 0) {
+            error = 1;
+          }
+          if (!error) {
+            error = checkForTextErrors(restrictions_text);
+            if (error) {
+              error_message = error;
+            }
+          }
+        }
+      }
+    }
+
+    if (!error) {
+      // -- check dates
+      var expire_date = $('#expiration-date').val();
+      var start_date = $('#start-date').val();
+      var current_date = new Date();
+      current_date.setDate(current_date.getDate() - 1);
+      if (expire_date) {
+        if (!Date.parse(expire_date)) error = 2;
+        if (Date.parse(expire_date) < Date.parse(current_date)) error = 2;
+      }
+      if (start_date) {
+        if (!Date.parse(start_date)) error = 2;
+        if (Date.parse(start_date) < Date.parse(current_date)) error = 2;
+      }
+    }
+
+    if (!error) {
+      // -- check URL
+      var url = $('#url').val();
+      if (url.length > 0) {
+        if (!isValidUrl(url)) {
+          error = 3;
+        } else {
+          var store_domain = $('#store-domain').val();
+          var domain = getRootDomain(url);
+          if (domain != store_domain) {
+            error = 4;
+          }
+        }
+      }
+    }
+
+    // -- show the previewed title
+    var title = type_text + ' ' + what_text;
+    if (minorder_text) {
+      title = title + ' (' + minorder_text + ')';
+    }
+    if (restrictions_text) {
+      if (minorder_text) {
+        title = title + ' ' + restrictions_text;
+      } else {
+        title = title + ' (' + restrictions_text + ')';
+      }
+    }
+    title = titleCase(title);
+    var merchant_name = $('#merchant-name').val();
+
+    if (is_apponly) {
+      title = title + ' with ' + merchant_name + '\'s Mobile App';
+    } else {
+      title = title + ' at ' + merchant_name;
+    }
+    var preview_input = '#preview-title';
+    var preview_input_div = '#preview-title-div';
+    var preview_input_input = '#preview-title-input';
+    if (error) {
+      if (error == 2) {
+        error_message = 'Please make sure any dates entered are valid and in the future.';
+      } else if (error == 3) {
+        error_message = 'Please enter a valid URL.';
+      } else if (error == 4) {
+        error_message = "Deal URL must match this store's website.";
+      } else if (error == 5) {
+        error_message = 'You have invalid entries in your submission. Please correct and submit again.';
+      }
+      // -- error out
+      $(preview_input_div).hide();
+      $(preview_input).text('');
+      $(preview_input_input).val('');
+      $('#submit').hide();
+      $(this).text('Continue');
+      alert(error_message);
+      return 0;
+    }
+    $(preview_input_div).show();
+    $(preview_input).text(title);
+    $(preview_input_input).val(title);
+    $('#submit').show();
+    $(this).text('Update title');
+  });
+
+  $('#edit-title-link').on('click', function () {
+    if ($('#preview-title').is(':visible')) {
+      $('#preview-title').hide();
+      $('#preview-title-input').show().focus();
+    } else {
+      $('#preview-title').show();
+      $('#preview-title-input').hide();
+    }
+  });
+
+  // ----- generic spinner display on submit
+
+  $(".spinner-loading-form").on('submit', function (e) {
+    $(".spinner").show();
+    $(".submit-btn").hide();
+  });
+
+  // ----- redeem coins
+
+  $('#redeem-count').on('keyup change', function () {
+    var shouldEnable = !!$('#redeem-count').val();
+    $('#redeem-amz').prop('disabled', !shouldEnable);
+    var shouldEnableBitpay = shouldEnable && $('#bitpay-active').val() === 'true';
+    $('#redeem-bit').prop('disabled', !shouldEnableBitpay);
+  });
+
+  // ----- main menu
+
+  $('.toggle-main-menu').click(function () {
+    var menu = '#main_menu';
+    if ($(menu).is(':visible')) {
+      $('#main_menu').hide();
+    } else {
+      $('#main_menu').show();
+    }
+  });
+
+  // ----- page container height managers
+
+  var main = '.page--300l--main';
+  var sidebar = '.page--300l--sidebar';
+  var main_height = $(main).height();
+  var sidebar_height = $(sidebar).height();
+  if (sidebar_height > main_height) {
+    $(main).height(sidebar_height);
+  }
+
+  var main = '.page--300r--main';
+  var sidebar = '.page--300r--sidebar';
+  var main_height = $(main).height();
+  var sidebar_height = $(sidebar).height();
+  if (sidebar_height > main_height) {
+    $(main).height(sidebar_height);
+  }
+  // ----- header scolling
+  var didScroll;
+  var lastScrollTop = 0;
+  var delta = 5;
+  var navbarHeight = $('header').outerHeight();
+  $(window).on('scroll', function (event) {
+    didScroll = true;
+  });
+  setInterval(function () {
+    if (didScroll) {
+      hasScrolled();
+      didScroll = false;
+    }
+  }, 250);
+  function hasScrolled() {
+    var st = $(this).scrollTop();
+    if (Math.abs(lastScrollTop - st) <= delta) return;
+    if (st > lastScrollTop && st > navbarHeight) {
+      $('header').removeClass('nav-down').addClass('nav-up');
+    } else {
+      if (st + $(window).height() < $(document).height()) {
+        $('header').removeClass('nav-up').addClass('nav-down');
+      }
+    }
+    lastScrollTop = st;
+  }
+
+  // ----- bar chart
+
+  $('.barchart--hover').on('mouseenter', function () {
+    var div = '#' + $(this).data('target');
+    var color = $(this).data('color');
+    if (color == 'bg--green') {
+      var hovercolor = 'bg--green--l1';
+    } else if (color == 'bg--green--l4') {
+      var hovercolor = 'bg--green--l5';
+    } else if (color == 'bg--orange') {
+      var hovercolor = 'bg--orange--l2';
+    } else if (color == 'bg--orange--l5') {
+      var hovercolor = 'bg--orange--l6';
+    } else if (color == 'bg--blue') {
+      var hovercolor = 'bg--blue--l1';
+    } else if (color == 'bg--blue--l5') {
+      var hovercolor = 'bg--blue--l6';
+    } else if (color == 'bg--green--l5') {
+      var hovercolor = 'bg--green--l6';
+    } else if (color == 'bg--gr9') {
+      var hovercolor = 'bg--gra';
+    } else if (color == 'bg--gre') {
+      var hovercolor = 'bgf5';
+    }
+    $(div).show();
+    $(this).removeClass(color).addClass(hovercolor);
+  }).on('mouseleave', function () {
+    var div = '#' + $(this).data('target');
+    var color = $(this).data('color');
+    if (color == 'bg--green') {
+      var hovercolor = 'bg--green--l1';
+    } else if (color == 'bg--green--l4') {
+      var hovercolor = 'bg--green--l5';
+    } else if (color == 'bg--orange') {
+      var hovercolor = 'bg--orange--l2';
+    } else if (color == 'bg--orange--l5') {
+      var hovercolor = 'bg--orange--l6';
+    } else if (color == 'bg--blue') {
+      var hovercolor = 'bg--blue--l1';
+    } else if (color == 'bg--blue--l5') {
+      var hovercolor = 'bg--blue--l6';
+    } else if (color == 'bg--green--l5') {
+      var hovercolor = 'bg--green--l6';
+    } else if (color == 'bg--gr9') {
+      var hovercolor = 'bg--gra';
+    } else if (color == 'bg--gre') {
+      var hovercolor = 'bgf5';
+    }
+    $(div).hide();
+    $(this).removeClass(hovercolor).addClass(color);
+  })
+
+  // ----- social logins
+
+  function handleConnect(network, action, token, extra) {
+    var data = { network: network, action: action, token: token };
+    if (extra) {
+      Object.keys(extra).forEach(function (key) {
+        data[key] = extra[key];
+      });
+    }
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      cache: false,
+      url: 'https://simplycodes.com/ajax/oauth-connect.php',
+      data: data,
+    })
+      .then(function (_) {
+        window.location.href = '/';
+      })
+      .catch(function (_) {
+        if (action === 'join') {
+          window.location.href = '/join';
+        } else {
+          window.location.href = '/login';
+        }
+      });
+  }
+
+  var fbLogin = $('#fb-login');
+  if (fbLogin) {
+    window.fbPostInit = function () {
+      var action = fbLogin.data('action');
+      fbLogin.on('click', function (event) {
+        event.currentTarget.classList.add('is-loading');
+        FB.login(
+          function (loginResponse) {
+            var token = loginResponse && loginResponse.authResponse && loginResponse.authResponse.accessToken;
+            if (token) {
+              handleConnect('facebook', action, token);
+            }
+          },
+          { scope: 'email' },
+        );
+      });
+    };
+    if (window.FB !== undefined) {
+      window.fbPostInit();
+    }
+  }
+
+  var googleLogin = $('#google-login');
+  if (googleLogin) {
+    window.googlePostInit = function () {
+      var action = googleLogin.data('action');
+      googleLogin.on('click', function (event) {
+        event.currentTarget.classList.add('is-loading');
+        var GoogleAuth = gapi.auth2.getAuthInstance();
+        if (GoogleAuth.isSignedIn.get()) {
+          GoogleAuth.signOut();
+        }
+        GoogleAuth.currentUser.listen(function (user) {
+          var token = user.getAuthResponse().access_token;
+          if (token) {
+            handleConnect('google', action, token);
+          }
+        });
+        GoogleAuth.signIn();
+      });
+    };
+    if (window.gapi !== undefined) {
+      window.googlePostInit();
+    }
+  }
+
+  var appleLogin = $('#apple-login');
+  if (appleLogin) {
+    var action = appleLogin.data('action');
+    appleLogin.on('click', function () {
+      window.AppleID.auth.signIn().then(
+        function (loginResponse) {
+          var token = loginResponse && loginResponse.authorization && loginResponse.authorization.code;
+          if (token && loginResponse.user && loginResponse.user.name) {
+            // Important: The user object is only sent the very first time a user connects
+            handleConnect('apple', action, token, {
+              firstName: loginResponse.user.name.firstName || '',
+              lastName: loginResponse.user.name.lastName || '',
+            });
+          } else {
+            handleConnect('apple', action, token);
+          }
+        },
+        function (err) {
+          console.log('error', err);
+        },
+      );
+    });
+  }
+
+  $('.extension-optin').on('click', function () {
+    var target = $('#' + $(this).data('target'));
+    var action = $(this).data('action');
+    $.ajax({
+      type: 'POST',
+      url: '/ajax/analytics-optin.php',
+      data: JSON.stringify({ optIn: action }),
+      success: function () {
+        gtag('event', 'Data Collection', {
+          event_category: 'Extension',
+          event_label: action.charAt(0).toUpperCase() + action.slice(1),
+        });
+        $(target).hide();
+      },
+      contentType: 'application/json',
+    });
+  });
+
+  $('.gtag-event').on('click', function (ev) {
+    if (!window.gtag) {
+      return true;
+    }
+    ev.preventDefault();
+    var action = $(this).data('action');
+    var category = $(this).data('action');
+    var label = $(this).data('label');
+    gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      event_callback: function () {
+        if (ev.target.target === '_blank') {
+          window.open(ev.target.href);
+        } else {
+          window.location = ev.target.href;
+        }
+      },
+    });
+  });
+
+  function checkForTextErrors(textInput) {
+    const specialCharactersRegex = /[^a-zA-Z0-9\s]/;
+    const maximumTextLength = 70;
+    if (textInput.length > maximumTextLength) {
+      return 'Please describe using 70 characters maximum.';
+    }
+    if (specialCharactersRegex.test(textInput)) {
+      return 'Please do not use special characters or emojis.';
+    }
+
+    return false;
+  }
+
+  $('#type').on('change', function () {
+    const type = $(this).val();
+
+    if (type === 'type-bogo') {
+      $("#what option[value='what-sale']").hide();
+      $("#what option[value='what-sw']").hide();
+      $("#what option[value='what-other']").hide();
+      $('#what-desc-input').prop('placeholder', 'Enter the item(s) that are BOGO (required)');
+    } else {
+      $("#what option[value='what-sale']").show();
+      $("#what option[value='what-sw']").show();
+      $("#what option[value='what-other']").show();
+      $('#what-desc-input').prop('placeholder', "Describe what's discounted (optional)");
+    }
+  });
+});

@@ -1,0 +1,647 @@
+$(function(){
+
+  	// -- popunder
+
+	$('.popu').click(function(){
+	    var tab = $(this).data("tab");
+	    var url = $(this).data("url");
+	    var event = $(this).data("event");
+	    window.open(tab).focus();
+	    if (event && window.dataLayer) {
+	        dataLayer.push({
+	          event: 'GAEvent',
+	          eventCategory: 'CTA',
+	          eventAction: event,
+	          eventLabel: url,
+	          eventValue: undefined,
+	          eventNI: true,
+	          eventCallback: function() {
+	              window.location.href = url;
+	          }
+	        });
+	    } else {
+	        window.location.href = url;
+	    }
+	});
+
+	$(".hoverdiv").hover(
+		function(){
+			$('.clickclear').hide();
+			var delay = parseInt($(this).data("delay"));
+			var div = "#"+$(this).data("target");
+			timeoutHoverdiv = setTimeout(function(){
+				$(div).show();
+			}, delay)
+		},
+		function(){
+			var div = "#"+$(this).data("target");
+			$(div).hide();
+			$('.clickclear').hide();
+			clearTimeout(timeoutHoverdiv);
+		}
+	);
+	$(".hoverclass").hover(
+		function(){
+			var target = "#"+$(this).data("hoverclass-target");
+			var addClass = $(this).data("hoverclass-class");
+			$(target).addClass(addClass);
+		},
+		function(){
+			$(target).removeClass(addClass);
+		}
+	);
+/*
+	$(".hoverclass").hover(
+		function(){
+			var target = "#"+$(this).data("hoverclass-target");
+			var addClass = $(this).data("hoverclass-class");
+			timeoutHoverdiv = setTimeout(function(){
+				$(target).addClass(addClass);
+			}, delay)
+		},
+		function(){
+			$(target).removeClass(addClass);
+			clearTimeout(timeoutHoverdiv);
+		}
+	);
+*/
+	$(".toggle--modal").click(function(){
+		var div = "#"+$(this).data("target");
+		var cb = $(this).data("cb");
+		if ($(div).is(":visible")) {
+			$(div).hide();
+			$('body').css('overflow','visible');
+			if (cb) {
+			  $.get('/ajax/' + cb + '.php');
+			}
+		} else {
+			$(div).show();		
+			$('body').css('overflow','hidden');
+		}
+		if ($("#overlay").is(":visible")) {
+			$("#overlay").hide();
+		} else {
+			$("#overlay").show();		
+		}
+	});
+
+	// ------ datepicker
+	$( function() {
+		$(".datepicker").datepicker();
+	} );	
+
+	// ----- click to clear
+	$(document).click(function() {
+	    $(".clickclear").hide();
+	});
+
+	// ----- href
+  $('.href').click(function () {
+    const clickedItem = $(this);
+
+    if (clickedItem.data('submit-coupon')) {
+      trackAddCouponEvent();
+    }
+
+    if (clickedItem.data('follow-merchant')) {
+      trackFollowMerchant(this);
+    }
+
+    if (clickedItem.data('url')) {
+      var url = clickedItem.data('url');
+    } else {
+      var url = clickedItem.attr('name');
+    }
+    var stay = clickedItem.data('nav') == 'stay' || clickedItem.data('navigation') == 'stay';
+    var event = clickedItem.data('event');
+    if (stay && event && window.ga && ga.loaded) {
+      ga('send', 'event', 'CTA', event, url, {
+        hitCallback: function () {
+          window.location.href = url;
+        },
+      });
+    } else if (stay) {
+      window.location.href = url;
+    } else {
+      window.open(url).focus();
+      if (event && window.ga && ga.loaded) {
+        ga('send', 'event', 'CTA', event, url);
+      }
+    }
+  });
+
+    // ----- toggle
+	$(".toggle").click(function(){
+		var target = "#"+$(this).data("target");
+		if ($(target).is(":visible")) { // -- first check if was visible
+			var was_visible = 1;
+		}
+		// first, hide the group
+		var group = "."+$(this).data("group");
+		$(group).hide();
+		var valgroup = "."+$(this).data("val-group");
+		$(valgroup).val('');
+		var togglemode = $(this).data("toggle-mode");
+		var togglemode = $(this).data("toggle-mode");
+		var display = $(this).data("toggle-display");
+		if (!display) {
+			display = "block";
+		}
+		// then, show the target
+		if (was_visible && togglemode != "showonly") {
+			$(target).hide();
+		} else {
+			$(target).css("display", display);		
+		}
+		var target2 = "#"+$(this).data("target2");
+		if ($(target2).is(":visible") && togglemode != "showonly") {
+			$(target2).hide();
+		} else {
+			$(target2).css("display", display);		
+		}
+		// targetclass?
+		var targetclass = "."+$(this).data("targetclass");
+		if ($(targetclass).is(":visible") && togglemode != "showonly") {
+			$(targetclass).hide();
+		} else {
+			$(targetclass).css("display", display);		
+		}
+		// change the button state
+		var state = $(this).data("state");
+		var stategroup = "."+$(this).data("state-group");
+		$(stategroup).removeClass(state);		
+		$(this).addClass(state);
+		var angle = "#"+$(this).data("angle");
+		if ($(angle).hasClass("fa-angle-down")) {
+			$(angle).removeClass("fa-angle-down").addClass("fa-angle-up");
+		} else {
+			$(angle).addClass("fa-angle-down").removeClass("fa-angle-up");			
+		}
+		// -- change the label
+		if ( ($(target).is(":visible") || $(targetclass).is(":visible")) && togglemode != "showonly") {
+			var hidelabel = $(this).data("hidelabel");
+			$(this).html(hidelabel);
+		} else {
+			var showlabel = $(this).data("showlabel");			
+			$(this).html(showlabel);
+		}
+	});
+    // ----- showdiv
+	$(".showdiv").click(function(){
+		var toshow = $(this).data("showdiv-target");
+		var tohide = $(this).data("showdiv-hide");
+		$("#"+tohide).hide();
+		$("#"+toshow).show();
+	});
+    // ----- hidediv
+	$(".hidediv").click(function(){
+		var tohide = $(this).data("target");
+		$("#"+tohide).hide();
+	});
+    // ----- toggle2
+	$(".toggle2").click(function(){
+		var toshow = $(this).data("toshow");
+		var tohide = $(this).data("tohide");
+		if (tohide == "this") {
+			$(this).hide();
+		} else {
+			$("#"+tohide).hide();
+		}
+		$("#"+toshow).show();
+		
+	});
+    // ----- toggle modal
+	$(".toggle-modal").click(function(){
+		var target = "#"+$(this).data("target");
+		if ($(target).is(":visible")) {
+			$(target).hide();
+			$(".modal__film").hide();
+			$(".modal__wrap").hide();
+			$(".modal--film").hide();
+			$(".modal--wrap").hide();
+		} else {
+			$(".modal__film").show();
+			$(".modal__wrap").css("display", "flex");
+			$(".modal--film").show();
+			$(".modal--wrap").css("display", "flex");
+      // $(film).show();
+		}
+	});
+	$(".close-modals").click(function(){
+		$(".modal").hide();
+		$(".modal2").hide();
+		$(".modal__film").hide();
+		$(".modal__wrap").hide();
+		$(".modal--film").hide();
+		$(".modal--wrap").hide();
+	});
+    // ----- toggle-two
+	$(".toggle-two").click(function(){
+		var target1 = "#"+$(this).data("target1");
+		var target2 = "#"+$(this).data("target2");
+		var label1 = $(this).data("label1");
+		var label2 = $(this).data("label2");
+		if ($(target1).is(":visible")) {
+			$(target1).hide();
+		} else {
+			$(target1).show();		
+		}
+		if ($(target2).is(":visible")) {
+			$(target2).hide();
+		} else {
+			$(target2).show();		
+		}
+		if ($(this).text() == label1) {
+			$(this).text(label2);
+		} else {
+			$(this).text(label1);			
+		}
+	});
+    // ----- toggle an entire class
+	$(".toggle-class").click(function(){
+		var target = "."+$(this).data("target");
+		if ($(target).is(":visible")) {
+			$(target).hide();
+		} else {
+			$(target).show();		
+		}
+	});
+    // ----- toggle a class label on and off this
+	$(".toggleclass").click(function(){
+		var tclass = $(this).data("tclass");
+		if ($(this).hasClass(tclass)) {
+			$(this).removeClass(tclass);
+		} else {
+			$(this).addClass(tclass);			
+		}
+	});
+	// ----- submit-w-check
+	$(".submit-w-check").click(function(){
+		var to_check = "#"+$(this).data("check-id");
+		var val = $(to_check).val();
+		if (val.length == 0) {
+			alert("Please enter the required information prior to submitting.")
+		} else {
+			var to_submit = "#"+$(this).data("target");
+			$(to_submit).submit();
+		}
+	});
+
+    // ----- jsval
+	$(".jsval").click(function(){
+		// first, set group to 0
+		var group = "."+$(this).data("jsval-group");
+		$(group).val(0);
+		// get the value to set
+		var value = $(this).data("jsval-value");
+		if (!value) {
+			value = 1;
+		}
+		// set the value
+		var undo = $(this).data("jsval-undo");
+		var target = "#"+$(this).data("jsval-target");
+		if (undo) {
+			if ($(target).val() == 0) {
+				$(target).val(value);		
+			} else {
+				$(target).val(0);		
+			}
+		} else {
+			$(target).val(value);		
+		}
+	});
+
+    // ----- focus
+	$(".focus").click(function(){
+		var target = "#"+$(this).data("focus");
+		$(target).focus();
+	});
+	// ----- inputrd
+	$(".inputrd").keypress(function(event){
+		var keycode = ( event.keyCode ? event.keyCode : event.which );
+		if (keycode == 13) {
+			var val = $(this).val();
+			var url = $(this).data("url");
+			url = url+val;
+			var stay = $(this).data("stay");
+			if (stay == 1) {
+		        window.location.href = url;			
+			} else {
+	            window.open(url).focus();			
+			}			
+		} 
+	});
+	// ----- UI toggle
+	$(".uitoggle").click(function(){
+		var toggleclass = "."+$(this).data("uitoggle-class");
+		var addclass = $(this).data("uitoggle-class2");
+		$(toggleclass).removeClass(addclass);
+		$(this).addClass(addclass);
+	});
+	// ----- select-show-val 
+	$(".select-show-val").change(function(){
+		var hide = $(this).data("selectshow-hideclass");
+		$('.'+hide).hide();
+		var val = $(this).val();
+		var name = $(this).data("selectshow-name");
+		var toshow = "#"+name+val;
+		$(toshow).show();
+
+		var focus = $(this).data("focus-id");
+		if (focus) {
+			$('#'+focus).focus();
+		}
+	});
+	// -- undisable
+	$(".undisable").click(function(){
+		var dclass = "."+$(this).data("undisable-class");
+		var target = "#"+$(this).data("undisable-target");
+		var addclass = $(this).data("undisable-addclass");
+		var removeclass = $(this).data("undisable-removeclass");
+		var viztarget = "#"+$(this).data("undisable-viztarget");
+		var viztargetclass = "."+$(this).data("undisable-viztargetclass");
+		var viztarget_addclass = $(this).data("undisable-viztarget-addclass");
+		var viztarget_removeclass = $(this).data("undisable-viztarget-removeclass");
+		$(dclass).prop("disabled", true).removeClass(addclass).addClass(removeclass);
+		$(target).prop("disabled", false).removeClass(removeclass).addClass(addclass); // Element(s) are now enabled.
+		$(viztargetclass).removeClass(viztarget_addclass).addClass(viztarget_removeclass);
+		$(viztarget).removeClass(viztarget_removeclass).addClass(viztarget_addclass);
+   	});
+	
+	// ----- select-show
+	$(".select-show").change(function(){
+		var hide = $(this).data("selectshow-class");
+		$('.'+hide).hide();		
+		var target = $(this).val();
+			// -- exception
+			var exception = $(this).data("selectshow-exception");
+			if (target == exception) {
+				var exception_id = $(this).data("selectshow-exception-id");
+				$('#'+exception_id).show();
+				return FALSE;
+			}
+		$('#'+target).show();
+		var showclass = $(this).data("selectshow-showclass");
+		if (target != "0") {
+			$('.'+showclass).show();			
+		}
+		var showid = $(this).data("selectshow-showid");
+		if (target != "0") {
+			$('#'+showid).show();			
+		}
+		var showdiv = $(this).data("selectshow-showdiv");
+		if (target == showdiv) {
+			$('#'+showdiv).show();					
+			$('.'+showclass).hide();			
+		} else {
+			$('#'+showdiv).hide();								
+		}
+		var modifier = $(this).data("focus-modifier");
+		if (modifier) {
+			var focus = target+modifier;
+			$('#'+focus).focus();
+		}
+		var focus = $(this).data("focus-id");
+		if (focus) {
+			$('#'+focus).focus();
+		}
+	});
+	// ----- select-show-options
+	$(".select-show-byval").change(function(){
+		var hide = $(this).data("hideclass");
+		$('.'+hide).hide();		
+		var target = $(this).val();
+		$('#'+target).show();
+		return FALSE;
+    /*
+    var focus = $(this).data("focus-id");
+		if (focus) {
+			$('#'+focus).focus();
+    }
+    */
+	});
+	// ----- select-show-0
+	$(".select-show-0").change(function(){
+		var target = "#"+$(this).data("selectshow-target");
+		var focus = "#"+$(this).data("selectshow-focus");
+		if ($(this).val() != 0) {
+			$(target).show();
+			$(focus).focus();
+		} else {
+			$(target).hide();
+		}
+	});
+	// ----- onkey show
+	$(".onkey-show").keyup(function(){
+		var target = "#"+$(this).data("onkey-target");
+		$(target).show();		
+	});
+	// ----- show
+	$(".show").click(function(){
+		var target = "#"+$(this).data("show-target");
+		$(target).show();		
+	});
+	// ----- hdie
+	$(".hide").click(function(){
+		var target = "#"+$(this).data("hide-target");
+		$(target).hide();		
+	});
+	// -- onfile-show	
+	$(".onfile-show").change(function(){
+		var target = "#"+$(this).data("onfile-target");
+		$(target).show();		
+	});
+	// ----- hover
+	$(".hover").hover(function(){
+		var div = "#"+$(this).data("target");
+		if ($(div).is(":visible")) {
+			$(div).hide();
+		} else {
+			$(div).show();
+		}
+	});
+	// ----- submit form
+	$(".submitform").click(function() {
+		var form = "#"+$(this).data("target");
+		if (form) {
+			$(form).submit();
+		} else {
+			var form = "#"+$(this).attr("name");
+			$(form).submit();				
+		}
+	});
+	// ----- submit form
+	$(".submitf").click(function() {
+		var form = "#"+$(this).data("formid");
+		if (form) {
+			$(form).submit();
+		}
+	});
+
+	// ----- on select change submit form
+	$(".select-submit").change(function() {
+		var form = "#"+$(this).data("target");
+		$(form).submit();
+	});
+
+	// ----- universal expand
+	$(".expand").click(function(){
+		var target = $(this).data("target");
+		var type = $(this).data("type");
+		var toshow = "."+target;
+		if (type == "table") {
+			$(toshow).css("display", "table-row");
+		} else {
+			$(toshow).show();		
+		}
+		var remove = $(this).data("remove");
+		if (remove == 1) {
+			$(this).hide();
+		}
+		var reverse = $(this).data("reverse");
+		var dir = $(this).data("dir");
+		if (reverse == 1) {
+			if (dir == 1) {
+				$(target).show();
+				$(this).text('View less');
+				$(this).data("dir").val(2);
+			} else if (dir == 2) {
+				$(target).hide();
+				$(this).text('View more');
+				$(this).data("dir").val(1);
+			}			
+		}
+	});
+
+	// ----- infinite expand
+	$(".expandi").click(function(){
+		var label = $(this).data("label");
+		var page = parseInt($(this).data("page"));
+		var next_page = page + 1;
+		var last_page = parseInt($(this).data("last-page"));
+		var label_to_show = "."+label+"-"+next_page;
+		var is_table = $(this).data("table");
+		var display = $(this).data("expand-display");
+		if (is_table) {
+			$(label_to_show).css("display", "table-row");
+		} else if (display) {
+			$(label_to_show).css("display", display);
+		} else {
+			$(label_to_show).show();
+		}			
+		if (next_page == last_page) {
+			$(this).hide();			
+		} else {		
+			$(this).data("page", next_page);
+		}
+	});
+
+
+	// ----- simple expander
+	$('.expandersimple').click(function () {
+    const clickedElement = $(this);
+
+    var target = clickedElement.data('target');
+    var type = clickedElement.data('type');
+    var toshow = '.' + target;
+    var remove = clickedElement.data('remove');
+    var reverse = clickedElement.attr('data-reverse');
+
+    // -- remove the expander button
+    if (remove == 1) {
+      clickedElement.hide();
+    }
+
+    // ----- if no reverse needed
+    if (!reverse) {
+      if (type == 'table') {
+        $(toshow).css('display', 'table-row');
+      } else {
+        $(toshow).show();
+      }
+    } else {
+      // ----- reverse needed
+      if (reverse == 1) {
+        if (type == 'table') {
+          $(toshow).css('display', 'table-row');
+        } else {
+          $(toshow).show();
+        }
+        clickedElement.text('View less');
+        clickedElement.attr('data-reverse', 2);
+      } else if (reverse == 2) {
+        $(toshow).hide();
+        clickedElement.text('View more');
+        clickedElement.attr('data-reverse', 1);
+      }
+    }
+  });
+
+	// ----- reversible expander
+	$(".expanderreverse").click(function(){
+		var target = "."+$(this).data("target");
+		var dir = $(this).data("direction");
+		if (dir == 1) {
+			$(target).show();
+			$(this).data("direction", 2);
+			$(this).text('View less');
+		} else if (dir == 2) {
+			$(target).hide();			
+			$(this).data("direction", 1);
+			$(this).text('View more');
+		}
+	});
+	// ----- checkbox
+	$(".checkbox").click(function(){
+		var target = "#"+$(this).data("target");
+		if ($(target).is(":visible")) {
+			$(target).hide();
+		} else {
+			$(target).show();
+		}
+	});
+	// ----- click to fill
+	$(".c2f").click(function(){
+		var target = "#"+$(this).data("target");
+		var slug = $(this).data("slug");
+		$(target).val(slug);
+	});
+	// ----- click class
+	$(".clickclass").click(function(){
+		var active = $(this).data("active");
+		$(".clickclass").removeClass(active);
+		$(this).addClass(active);
+	});
+		
+
+	// -- modals
+	
+	$(".modal").click(function(){
+		event.stopPropagation();
+	});
+
+});
+
+
+/* functions */
+
+function titleCase(str) {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+function trackAddCouponEvent() {
+  
+}
+
+const trackFollowMerchant = function(callee) {
+ 
+}
+
+// https://stackoverflow.com/a/25346429
+function getCookie(name) {
+  function escape(s) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
+  var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+  return match ? match[1] : null;
+}
