@@ -1,11 +1,9 @@
-[
-   {
-      "magento": "https://www.oluxury.com/us_en/checkout/cart/"
-   },
-   {
-      "wix": "https://www.funkitz.co.uk/checkout"
-   },
-   {
-      "woocomerce": "https://neosabers.com/pages/checkout/"
-   }
-]
+{
+   "shopify": [
+      "https://kiadeevaboutique.com/checkouts/cn/Z2NwLXVzLWVhc3QxOjAxSFdQSzRNOVpWNTBSR1FGUTdWV1kwSjFT",
+      "https://badinka.com/checkouts/cn/Z2NwLWV1cm9wZS13ZXN0NDowMUhXTVM0U0NSOEtGUVlXMllRWTlLOERNMw?_ga=undefined"
+   ],
+   "magento": ["https://www.oluxury.com/us_en/checkout/cart/"],
+   "wix": ["https://www.funkitz.co.uk/checkout"],
+   "woocomerce": ["https://neosabers.com/pages/checkout/"]
+}

@@ -2,10 +2,24 @@ import checkCode from "./checkCode"
 
 
 const content = document.createElement("div")
-content.classList = "bg-red-500 fixed inset-x-0 bottom-5 items-center flex justify-center text-white bg-white p-4 border-white border-2 rounded-lg mx-auto max-w-sm"
+content.classList = "fixed inset-x-0 bottom-5"
+
+const framework = `<div class="w-full bg-gray-700 rounded-xl border-3 border-white bg-opacity-50 px-4 py-1 border-white border-2 rounded-lg text-lg">
+    Shopify
+</div>`
+
+const code = `<div class="w-full bg-gray-700 rounded-xl border-3 border-white bg-opacity-50 text-center px-4 py-1 border-white border-2 rounded-lg text-lg">
+    code
+</div>`
 
 
-content.appendChild(checkCode)
+
+content.innerHTML = `<div class="flex-col items-center flex justify-center text-white mx-auto max-w-sm gap-2">
+    <div class="w-full bg-gray-700 rounded-xl border-3 border-white bg-opacity-50 flex justify-center  px-4 py-2 border-white border-2 rounded-lg">
+    ${checkCode.outerHTML}
+    </div>
+</div>`
+
 
 
 
