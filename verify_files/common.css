@@ -701,7 +701,7 @@ ol > li.list:before {
 	flex-grow: 3;
 }
 .flex--fs1 {
-	flex-shrink: : 1;
+	flex-shrink:  1;
 }
 .flex--fs2 {
 	flex-shrink: 2;

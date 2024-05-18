@@ -5,8 +5,8 @@
   "description": "asistent simpy code checker",
   "author": "@coderagnarok",
   "scripts": {
-    "vite": "vite",
-    "dev": "plasmo dev",
+    "dev": "vite",
+    "dev-plasmo": "plasmo dev",
     "build": "plasmo build",
     "package": "plasmo package"
   },
