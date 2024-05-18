@@ -1,7 +1,8 @@
-import cssText from "data-text:~style.css"
+import cssText from "data-text:~/styles.css"
+
 import type { PlasmoCSConfig } from "plasmo"
 
-import CountButton from "~components/BtnCheck"
+import CountButton from "~src/components/BtnCheck"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://**/*", "*://**/*"],
