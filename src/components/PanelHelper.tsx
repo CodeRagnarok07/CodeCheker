@@ -1,6 +1,7 @@
 
 // import ScreenShot from "./ScreenShot"
-import getScreenShot from "../utils/takeScreen"
+import { sendToBackground } from "@plasmohq/messaging"
+
 import { handleSelect, simpleClick } from "../utils/DOMmanage"
 
 
@@ -8,18 +9,34 @@ import { handleSelect, simpleClick } from "../utils/DOMmanage"
 
 export default function PanelHelper() {
 
-    
-    const handleClickValid = () => {
-        (document.querySelector("div[data-type='valid']") as HTMLDivElement)?.click()
+
+    const handleClickValid = async () => {
+        sendToBackground({
+            name: "to_verify_page",
+        }).then(resp => {
+            console.log(resp);
+            setTimeout(() => {
+                ; (document.querySelector("div[data-type='valid']") as HTMLDivElement)?.click()
+                window.scrollTo(0, document.body.scrollHeight);
+            }, 250)
+        })
+
     }
 
     const handleClickInvalid = () => {
         // getScreenShot()
+        sendToBackground({
+            name: "to_verify_page",
+        })
+        
+        console.log("se rompe el script?")
         simpleClick("div[data-type='invalid']")
         handleSelect('select[data-selectshow-name="invalid2-"]', 1)
         handleSelect('select[data-selectshow-name="invalid4-"]', 1)
         handleSelect('select[data-selectshow-name="invalid5-"]', 5)
         window.scrollTo(0, document.body.scrollHeight);
+        console.log("se rompe el script?")
+
         // pasteInputFile()
     }
 

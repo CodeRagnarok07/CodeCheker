@@ -11,6 +11,8 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@plasmohq/messaging": "^0.6.2",
+    "chrome-types": "^0.1.283",
     "html2canvas": "^1.4.1",
     "plasmo": "0.86.3",
     "react": "18.2.0",
@@ -37,8 +39,11 @@
     "vite": "^5.2.0"
   },
   "manifest": {
-    "permissions": ["scripting", "clipboardWrite", "clipboardRead"],
-    
+    "permissions": [
+      "scripting",
+      "clipboardWrite",
+      "clipboardRead"
+    ],
     "host_permissions": [
       "https://*/*"
     ]

@@ -39,6 +39,9 @@
 ### tabs manage
 - https://developer.chrome.com/docs/extensions/reference/api/tabs?hl=es-419
 
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts#react_to_listeners
+- 
+
 ### capture screenshot 
 
 - https://developer.mozilla.org/en-US/docs/Web/API/MediaStream
