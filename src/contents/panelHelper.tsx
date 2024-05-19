@@ -1,12 +1,15 @@
-import cssText from "data-text:~/styles.css"
+import cssText from "data-text:~/contents/styles.css"
+import PanelHelper from "../components/PanelHelper"
 
 import type { PlasmoCSConfig } from "plasmo"
 
-import CountButton from "~src/components/BtnCheck"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://**/*", "*://**/*"],
+  matches: ["<all_urls>"],
+  all_frames: true,
+  
 }
+
 
 export const getStyle = () => {
   const style = document.createElement("style")
@@ -15,7 +18,7 @@ export const getStyle = () => {
 }
 
 const PlasmoOverlay = () => {
-  return <CountButton />
+  return <PanelHelper/>
 }
 
 export default PlasmoOverlay

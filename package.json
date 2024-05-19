@@ -6,11 +6,12 @@
   "author": "@coderagnarok",
   "scripts": {
     "dev": "vite",
-    "dev-plasmo": "plasmo dev",
+    "plasmo": "plasmo dev",
     "build": "plasmo build",
     "package": "plasmo package"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
     "plasmo": "0.86.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -36,6 +37,8 @@
     "vite": "^5.2.0"
   },
   "manifest": {
+    "permissions": ["scripting", "clipboardWrite", "clipboardRead"],
+    
     "host_permissions": [
       "https://*/*"
     ]
