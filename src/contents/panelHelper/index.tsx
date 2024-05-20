@@ -1,5 +1,5 @@
 import cssText from "data-text:~/contents/styles.css"
-import PanelHelper from "../components/PanelHelper"
+import PanelHelper from "./PanelHelper"
 
 import type { PlasmoCSConfig } from "plasmo"
 import { sendToBackground } from "@plasmohq/messaging"

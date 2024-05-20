@@ -38,7 +38,7 @@
  
 ### tabs manage
 - https://developer.chrome.com/docs/extensions/reference/api/tabs?hl=es-419
-
+- https://docs.plasmo.com/framework/messaging#message-flow
 - https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts#react_to_listeners
 - 
 
@@ -53,3 +53,18 @@
 
 
 ## paste onclick
+
+## Automatization
+Crete automatization by my clicker experience
+
+- [ ] Base de datos para guardar las query´s y sus tipos y variants
+  - [ ]  add product
+  - [ ]  go to cart or search promo box code
+- [ ] Capture and save click by type
+- [ ] step type for click listen
+  - [ ] code box
+  - [ ] go to code box
+  - [ ] register
+  - [ ] search product
+  - [ ] add product
+

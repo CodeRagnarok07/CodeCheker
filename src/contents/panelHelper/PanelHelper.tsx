@@ -2,40 +2,38 @@
 // import ScreenShot from "./ScreenShot"
 import { sendToBackground } from "@plasmohq/messaging"
 
-import { handleSelect, simpleClick } from "../utils/DOMmanage"
+import { handleSelect, simpleClick } from "../../utils/DOMmanage"
+import getScreenShot from "~src/utils/takeScreen"
 
 
 
 
 export default function PanelHelper() {
 
-
+    const awaitWork = 250
     const handleClickValid = async () => {
+
+        // await getScreenShot()
         sendToBackground({
             name: "to_verify_page",
-        }).then(resp => {
-            console.log(resp);
-            setTimeout(() => {
-                ; (document.querySelector("div[data-type='valid']") as HTMLDivElement)?.click()
-                window.scrollTo(0, document.body.scrollHeight);
-            }, 250)
+            body: {
+                valid: true
+            }
         })
+
 
     }
 
-    const handleClickInvalid = () => {
-        // getScreenShot()
+    const handleClickInvalid = async () => {
+        // await getScreenShot()
         sendToBackground({
             name: "to_verify_page",
+            body: {
+                valid: false
+            }
         })
-        
-        console.log("se rompe el script?")
-        simpleClick("div[data-type='invalid']")
-        handleSelect('select[data-selectshow-name="invalid2-"]', 1)
-        handleSelect('select[data-selectshow-name="invalid4-"]', 1)
-        handleSelect('select[data-selectshow-name="invalid5-"]', 5)
-        window.scrollTo(0, document.body.scrollHeight);
-        console.log("se rompe el script?")
+
+
 
         // pasteInputFile()
     }
@@ -43,7 +41,7 @@ export default function PanelHelper() {
 
 
     return (
-        <div aria-label="panel-helper-extension" className="fixed mx-auto w-full bottom-20 pointer-events-none   flex items-center justify-center">
+        <div aria-label="panel-helper-extension" className="fixed mx-auto w-full left-[0%] bottom-[0%] pointer-events-none   flex items-center justify-center">
 
 
             <div className="flex flex-col pointer-events-auto gap-2">
