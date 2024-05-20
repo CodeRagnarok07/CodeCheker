@@ -1,8 +1,8 @@
+import { Storage } from "@plasmohq/storage"
 
 const pasteInputFile = async () => {
 
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
-    console.log(input.files)
 
     try {
         navigator.clipboard.read().then(async data => {
@@ -25,9 +25,10 @@ const pasteInputFile = async () => {
 
 
 
-export default window.addEventListener("load", () => {
+export default window.addEventListener("load", async() => {
 
     const listInputFile: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[type='file']")
+
 
     for (let index = 0; index < listInputFile.length; index++) {
         const input = listInputFile[index];
@@ -54,7 +55,6 @@ export default window.addEventListener("load", () => {
         top: 10%;
         object-fit: contain;
         pointer-events: none;
-        
         `
 
         inputText.addEventListener('paste', e => {
@@ -94,7 +94,6 @@ export default window.addEventListener("load", () => {
             fileInputContent.appendChild(input)
         }
     }
-
 })
 
 

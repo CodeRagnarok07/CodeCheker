@@ -68,3 +68,14 @@ Crete automatization by my clicker experience
   - [ ] search product
   - [ ] add product
 
+
+# Data
+## lemonsqueezy  
+
+Test card numbers
+Visa: 4242 4242 4242 4242
+Mastercard: 5555 5555 5555 4444
+American Express: 3782 822463 10005
+Insufficient funds: 4000 0000 0000 9995
+Expired card: 4000 0000 0000 0069
+3D Secure: 4000 0027 6000 3184

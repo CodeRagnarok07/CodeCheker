@@ -12,7 +12,6 @@ export default function PanelHelper() {
 
     const awaitWork = 250
     const handleClickValid = async () => {
-
         // await getScreenShot()
         sendToBackground({
             name: "to_verify_page",
@@ -32,18 +31,12 @@ export default function PanelHelper() {
                 valid: false
             }
         })
-
-
-
-        // pasteInputFile()
     }
 
 
 
     return (
         <div aria-label="panel-helper-extension" className="fixed mx-auto w-full left-[0%] bottom-[0%] pointer-events-none   flex items-center justify-center">
-
-
             <div className="flex flex-col pointer-events-auto gap-2">
 
                 <div className="flex text-center gap-2">
@@ -60,11 +53,6 @@ export default function PanelHelper() {
                 <div className="cursor-pointer rounded-md text-center px-4 bg-slate-300 border-4 text-black border-slate-900 bg-opacity-85">
                     captura
                 </div>
-
-
-
-
-
             </div>
         </div>
     )

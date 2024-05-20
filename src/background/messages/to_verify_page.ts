@@ -7,7 +7,7 @@ import { simpleClick, handleSelect } from "~src/utils/DOMmanage";
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
 
   const { valid } = req.body
-  let [tab] = await chrome.tabs.query({ url: "https://simplycodes.com/editor/verify" });
+  let [tab] = await chrome.tabs.query({ url: ["https://simplycodes.com/editor/verify", "http://localhost:5173/"] });
 
 
 

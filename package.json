@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@plasmohq/messaging": "^0.6.2",
+    "@plasmohq/storage": "^1.10.0",
     "chrome-types": "^0.1.283",
     "html2canvas": "^1.4.1",
     "plasmo": "0.86.3",
@@ -42,7 +43,7 @@
     "permissions": [
       "scripting",
       "clipboardWrite",
-      "clipboardRead"
+      "clipboardRead", "storage"
     ],
     "host_permissions": [
       "https://*/*"

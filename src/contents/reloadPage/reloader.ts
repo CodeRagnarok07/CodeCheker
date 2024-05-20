@@ -14,6 +14,7 @@ function Redirect() {
 }
 
 if (window.location.href == editorURL) {
+    console.log("push verify")
 
     setInterval(Redirect, 8000); // 4000 milisegundos equivalen a 4 segundo3
 } else if (window.location.href == verifyURL) {
