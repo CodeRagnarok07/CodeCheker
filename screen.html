@@ -13,7 +13,99 @@
 
     <input type="file">
 
-    <script type="module" src="./app.jsx"></script>
+    <script>
+
+
+        window.addEventListener("load", () => {
+            console.log("PASTE INPUT LOAD")
+            const listInputFile = document.querySelectorAll("input[type='file']")
+
+            for (let index = 0; index < listInputFile.length; index++) {
+                const input = listInputFile[index];
+                const fileInputContent = document.createElement("div")
+                fileInputContent.className = "clipboard_parent_div"
+
+
+
+
+                const inputText = document.createElement("input")
+                inputText.type = "text"
+                inputText.style.cssText = `
+            padding: 5px;
+            border-radius: 5px;
+
+            `
+                inputText.placeholder = "+ paste file"
+
+
+                const imgPreview = document.createElement("img")
+                imgPreview.style.cssText = `
+        height: 30vh;
+        width: auto;
+        position: fixed;
+        right: 15%;
+        top: 10%;
+        object-fit: contain;
+        cursor: pointer;        
+        `
+                // fileInputContent.appendChild(imgPreview)
+
+
+
+                inputText.addEventListener('paste', async e => {
+                    imgPreview.src = null
+                    if (e.clipboardData) {
+                        input.files = e.clipboardData.files;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                        if (input.files) {
+                            const [file] = input.files
+                            imgPreview.src = URL.createObjectURL(file)
+
+
+                        }
+                    }
+                    window.scrollTo(0, document.body.scrollHeight);
+
+                });
+
+                inputText.addEventListener('click', e => {
+                    this.focus()
+                    const result = document.execCommand('paste')
+                    console.log("ejecuto el paste", result)
+                    // try {
+                    //     navigator.clipboard.read().then(async data => {
+                    //     console.log(data)
+                    //     console.log(data[0])
+                    //     console.log(data.files)
+                    //     const clipboardContent = data[0];
+
+                    //     const blob = await clipboardContent.getType('image/png');
+                    //     const file = new File([blob], 'image.png');
+                    //     input.files[0] = file
+                    //     input.dispatchEvent(new Event('change'));
+                    //     input.dispatchEvent(new Event('paste'));
+                    //     input.dispatchEvent(new Event('click'));            
+                    // });
+                    // }catch (error){
+
+                    // }
+
+                })
+
+                if (input.parentNode) {
+                    input.parentNode.appendChild(fileInputContent)
+                    fileInputContent.appendChild(imgPreview)
+                    fileInputContent.appendChild(inputText)
+                    fileInputContent.appendChild(input)
+                }
+
+            }
+
+        })
+
+
+    </script>
 
 </body>
 

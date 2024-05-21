@@ -1,34 +1,20 @@
+import type { PlasmoCSConfig } from "plasmo"
 import { Storage } from "@plasmohq/storage"
+import { simpleClick } from "~src/utils/DOMmanage";
 
-const pasteInputFile = async () => {
 
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement
-
-    try {
-        navigator.clipboard.read().then(async data => {
-            const clipboardContent = data[0];
-            const blob = await clipboardContent.getType('image/png');
-            const file = new File([blob], 'image.png');
-            const fileList = new FileList();
-            fileList[0] = file;
-            input.files = fileList
-            input.dispatchEvent(new Event('change'));
-
-            console.log(input.files)
-        });
-    } catch (err) {
-        console.error('Failed to read clipboard contents: ', err);
-        return;
-    }
-
+export const config: PlasmoCSConfig = {
+    matches: ["https://simplycodes.com/editor/verify"],
 }
 
+const storage = new Storage({
+    area: "local"
+})
 
 
-export default window.addEventListener("load", async() => {
 
+window.addEventListener("load", () => {
     const listInputFile: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[type='file']")
-
 
     for (let index = 0; index < listInputFile.length; index++) {
         const input = listInputFile[index];
@@ -54,18 +40,36 @@ export default window.addEventListener("load", async() => {
         right: 15%;
         top: 10%;
         object-fit: contain;
-        pointer-events: none;
+        cursor: pointer;        
         `
+        // fileInputContent.appendChild(imgPreview)
 
-        inputText.addEventListener('paste', e => {
+
+
+        inputText.addEventListener('paste', async e => {
             imgPreview.src = null
             if (e.clipboardData) {
                 input.files = e.clipboardData.files;
                 input.dispatchEvent(new Event('change', { bubbles: true }));
 
                 if (input.files) {
+                    const data: boolean = await storage.get("valid")
+                    if (data == true) {
+                        imgPreview.style.border = "3px solid green"
+                        imgPreview.onclick = () => {
+                            simpleClick("#corrections>span.gr8")
+                            simpleClick("#submit-valid")
+                        }
+                    } else if (data == false) {
+                        imgPreview.style.border = "3px solid red"
+                        imgPreview.onclick = () => {
+                            simpleClick("#submit-invalid")
+                        }
+                    }
                     const [file] = input.files
                     imgPreview.src = URL.createObjectURL(file)
+
+
                 }
             }
             window.scrollTo(0, document.body.scrollHeight);
@@ -73,19 +77,18 @@ export default window.addEventListener("load", async() => {
         });
 
         inputText.addEventListener('click', e => {
+            e.currentTarget.dispatchEvent(new Event('paste'))
+            console.log(e.currentTarget)
 
             navigator.clipboard.read().then(async data => {
                 const clipboardContent = data[0];
                 const blob = await clipboardContent.getType('image/png');
-                const file = new File([blob], 'image.png');
-                const fileList = new FileList();
-                fileList[0] = file;
-                input.files = fileList
-                input.dispatchEvent(new Event('change'));
-    
+                const file = new File([blob], 'image.png');              
+                input.files[0] = file
+                input.dispatchEvent(new Event('paste'));
             });
+            console.log(input.files)
         })
-
 
         if (input.parentNode) {
             input.parentNode.appendChild(fileInputContent)
@@ -93,8 +96,11 @@ export default window.addEventListener("load", async() => {
             fileInputContent.appendChild(inputText)
             fileInputContent.appendChild(input)
         }
+
     }
+
 })
+
 
 
 

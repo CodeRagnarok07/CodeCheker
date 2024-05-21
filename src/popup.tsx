@@ -14,8 +14,6 @@ function IndexPopup() {
      open service worker
      open options page
 
-     - [] options page:
-      base de datos y datos de query´s y paginas visitadas
 
         
     </div>

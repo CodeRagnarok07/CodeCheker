@@ -14,6 +14,5 @@ const getScreenShot = async () => {
         .then(canvas => canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
             .then(() => confirm('image copied to clipboard'))))
 
-
 }
 export default getScreenShot

@@ -43,7 +43,9 @@
     "permissions": [
       "scripting",
       "clipboardWrite",
-      "clipboardRead", "storage"
+      "clipboardRead",
+      "storage",
+      "activeTab"
     ],
     "host_permissions": [
       "https://*/*"

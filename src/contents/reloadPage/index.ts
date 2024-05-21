@@ -1,10 +1,19 @@
 import type { PlasmoCSConfig } from "plasmo"
+import { Storage } from "@plasmohq/storage"
+
+
 
 export const config: PlasmoCSConfig = {
   matches: ["https://simplycodes.com/editor", "https://simplycodes.com/editor/verify"]
 }
 
-window.addEventListener("load", () => {
+const storage = new Storage({
+  area: "local"
+})
+
+
+
+window.addEventListener("load", async() => {
   const urlSound = "https://cdn.pixabay.com/audio/2024/02/19/audio_e4043ea6be.mp3"
   const audio = new Audio(urlSound);
   const editorURL = "https://simplycodes.com/editor"
@@ -18,13 +27,13 @@ window.addEventListener("load", () => {
   }
 
   if (window.location.href == editorURL) {
-    console.log("push verify")
-    setInterval(Redirect, 8000); // 4000 milisegundos equivalen a 4 segundo3
+    setInterval(Redirect, 5000); // 4000 milisegundos equivalen a 4 segundo3
   } else if (window.location.href == verifyURL) {
     if (localStorage.getItem("prevUrl") == "https://simplycodes.com/editor") {
       localStorage.setItem("prevUrl", window.location.href)
       audio.play();
     }
-
   }
+
+
 })

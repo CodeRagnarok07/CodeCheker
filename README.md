@@ -6,8 +6,7 @@
 - https://github.com/PlasmoHQ/examples/tree/d7533c6bf817c64cd9c171bcded74cc09fea73fc
 
 
-# Todo
-
+## Todo Q1 helper verify answer
 - [x] add the ui
   - [x] Fixed
   - [x] opacity
@@ -15,27 +14,57 @@
 - [x] Work Ui
   - [x] correct
   - [x] incorrect
+  - [x] Select options
+  - [x] last review storage
+- [x] site offline
+- [x] last review
+  - [x] Img fixed
+  - [x] Accept on click img
+- [x] Push img to input file from click board
 
-- [ ] Tab from others pages
-  - [ ] Get screenshot
-  - [ ] Select options
-  - [ ] last review
+- [ ] Get screenshot current from worker service and review the speed
+  - [ ] close tab of script on accept verify - or no if the next is the same 
+- [ ] change img input paste script inject
+- [ ] open helper only if verify page is in tab
+
+## data storage of workflow
+Crete automatization by my clicker experience
+
+- [ ] Base de datos para guardar las query´s y sus tipos y variants
+  - [ ]  add product
+  - [ ]  go to cart or search promo box code
+- [] options page:
+      base de datos y datos de query´s y paginas visitadas
+- [ ] Capture click by type of step
 
 
-- [ ] Push img to input file from click board
-- [ ] site offline
-- [ ] last review
-  - [ ] Img fixed
-  - [ ] Accept on click img
-
-
-
-
-
+- [ ] storage data of page
+  - page
+  - page type
+  - page framework
+    - Shopify
+    - WordPress
+    - etc
+  - url
+    - cart
+    - collections
+    - checkout
+  - Workflow add products
+    - product on homepage
+    - view detail
+    - cart on sidebar
+  
+- [ ] step type for click listen
+  - [ ] Get conditionals from verify page
+  - [ ] code box
+  - [ ] go to code box
+  - [ ] register
+  - [ ] search product
+  - [ ] add product
+  - [ ] open helper on step
 
 # bibliography
 
- 
 ### tabs manage
 - https://developer.chrome.com/docs/extensions/reference/api/tabs?hl=es-419
 - https://docs.plasmo.com/framework/messaging#message-flow
@@ -53,20 +82,11 @@
 
 
 ## paste onclick
+- https://web.dev/patterns/clipboard/paste-text?hl=es-419
 
-## Automatization
-Crete automatization by my clicker experience
 
-- [ ] Base de datos para guardar las query´s y sus tipos y variants
-  - [ ]  add product
-  - [ ]  go to cart or search promo box code
-- [ ] Capture and save click by type
-- [ ] step type for click listen
-  - [ ] code box
-  - [ ] go to code box
-  - [ ] register
-  - [ ] search product
-  - [ ] add product
+## Get Product
+- https://stackoverflow.com/questions/991367/how-to-get-the-containing-form-of-an-input
 
 
 # Data
